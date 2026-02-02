@@ -111,9 +111,10 @@ def move(gameBoard,piece,direction):
         if checkColision(gameBoard,piece2):
             return piece,gameBoard
     if direction == 3:
-        centerX,centerY = (minX+maxX)//2,(minY+maxY)//2
+        centerX,centerY = round((minX+maxX)/2),round((minY+maxY)/2)
         print(f"minX: {minX}, maxX: {maxX}, minY: {minY}, maxY: {maxY}")
         print(f"centerX: {centerX}, centerY: {centerY}")
+        print(piece)
         x1 = max(centerX-1, 0)
         x2 = min(centerX+2, piece.shape[0])
         y1 = max(centerY-1, 0)
