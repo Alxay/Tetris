@@ -8,15 +8,15 @@ running = True
 gameBoard = np.zeros((20,10),dtype=int)
 print(gameBoard)
 
-def generatePiece(gameBoard):
+
+def generatePiece():
     piece = np.zeros((20,10),dtype=int)
     piece[0][1] = 1
     piece[0][2] = 1
     piece[0][3] = 1
     piece[1][2] = 1
-    gameBoard = np.maximum(gameBoard,piece)
-    print(gameBoard)
-    return gameBoard
+    return piece
+   
 
 def drawGrid():
     blockSize = 35 #Set the size of the grid block
@@ -25,16 +25,42 @@ def drawGrid():
             rect = pygame.Rect(x, y, blockSize, blockSize)
             pygame.draw.rect(screen, "green", rect, 1)
 
-def drawBoard(gameBoard):
-    blocks = np.argwhere(gameBoard == 1)
+def drawBoard(gameBoard,piece=np.zeros((20,10),dtype=int)):
+    blocks = np.vstack((
+        np.argwhere(gameBoard == 1),
+        np.argwhere(piece == 1)
+    ))
+    #[[i j],[i j]]
     for i,j in blocks:
-        print(f"Klocek {i}, {j}")
+        print(f"Klocek {j}, {i}")
+        rect = pygame.Rect(j*35,i*35,35,35)
+        pygame.draw.rect(screen,"purple",rect)
+        
+
+def move(gameBoard,piece):
+    gameBoardBlocks = np.argwhere(gameBoard == 1)
+    pieceBlocks = np.argwhere(piece == 1)
+    gameBoardBlocks = set(map(tuple, gameBoardBlocks))
+    piece2 = np.zeros((20,10),dtype=int)
+    for i,j in pieceBlocks:
+        if(i >= 19 or (i+1,j) in gameBoardBlocks):
+            print("Block under the piece !!")
+            
+        else:
+            piece2[i+1][j] = 1
+            piece[i][j] = 0
+        
+    return piece2
 
 
-gameBoard = generatePiece(gameBoard)
-drawBoard(gameBoard)
+
+piece = generatePiece()
+gameBoard[19][0] = 1
+gameBoard[19][1] = 1
+gameBoard[10][2] = 1
 while running:
     #game loop
+    screen.fill("black")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -44,8 +70,13 @@ while running:
         screen.fill("green")
 
     drawGrid()
+    piece = move(gameBoard,piece)
+    print(piece)
+    print("-----")
+    print(gameBoard)
+    drawBoard(gameBoard,piece)
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(1)
 
 
 
