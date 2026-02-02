@@ -75,6 +75,7 @@ def maxCords(blocks):
 def move(gameBoard,piece,direction):
     print("ruch")
     pieceBlocks = np.argwhere(piece == 1)
+    gameBlocks = np.argwhere(gameBoard == 1)
     print(pieceBlocks)
     minX,maxX,minY,maxY = maxCords(pieceBlocks)
     piece2 = np.zeros((20,10),dtype=int)
@@ -83,6 +84,7 @@ def move(gameBoard,piece,direction):
             return piece
         for i,j in pieceBlocks:
             piece2[i][j+1] = 1
+        
     if direction == 2:
         if minY <= 0:
             return piece
@@ -92,38 +94,28 @@ def move(gameBoard,piece,direction):
         centerX,centerY = (minX+maxX)//2,(minY+maxY)//2
         print(f"minX: {minX}, maxX: {maxX}, minY: {minY}, maxY: {maxY}")
         print(f"centerX: {centerX}, centerY: {centerY}")
-        fragment = piece[centerX-1:centerX+2, centerY-1:centerY+2] # kwadrat 3x3 do obrotu
+        x1 = max(centerX-1, 0)
+        x2 = min(centerX+2, piece.shape[0])
+        y1 = max(centerY-1, 0)
+        y2 = min(centerY+2, piece.shape[1])
+
+        fragment = piece[x1:x2, y1:y2]
         print(fragment)
         rotated = np.rot90(fragment, -1)  # -1 = 90° w prawo
         print(rotated)
-        piece2[centerX-1:centerX+2, centerY-1:centerY+2] = rotated
+        if minY <= 0:
+            return piece
+        piece2[x1:x2, y1:y2] = rotated
+
+        # try:
+        #     piece2[x1:x2, y1:y2] = rotated
+        # except ValueError:
+        #     print("Nie można wstawić fragmentu – wychodzi poza planszę!")
+        #     return piece
         if np.any((gameBoard==1)&(piece2==1)):
             print("Kolizja po obrocie!")
             return piece
         
-        
-    if direction == 4:
-        minX = 100
-        maxX = 0
-        minY = 100
-        maxY = 0
-        for i,j in pieceBlocks:
-            if i > maxX:
-                maxX = i
-            if i < minX:
-                minX = i
-            if j > maxY:
-                maxY = j
-            if j < minY:
-                minY = j
-        centerX,centerY = (minX+maxX)//2,(minY+maxY)//2
-        print(f"minX: {minX}, maxX: {maxX}, minY: {minY}, maxY: {maxY}")
-        print(f"centerX: {centerX}, centerY: {centerY}")
-        fragment = piece[centerX-1:centerX+2, centerY-1:centerY+2] # kwadrat 3x3 do obrotu
-        print(fragment)
-        rotated = np.rot90(fragment, 1)  # -1 = 90° w prawo
-        print(rotated)
-        piece2[centerX-1:centerX+2, centerY-1:centerY+2] = rotated
     return piece2
 
 
@@ -152,21 +144,31 @@ while running:
         screen.fill("green")
     if keys[pygame.K_d]:
         piece = move(gameBoard,piece,1)
+        heckcolision = np.any((gameBoard==1)&(piece==1))
+        if heckcolision:
+            piece,gameBoard = frame(gameBoard,piece)
     if keys[pygame.K_a]:
         piece = move(gameBoard,piece,2)
+        heckcolision = np.any((gameBoard==1)&(piece==1))
+        if heckcolision:
+            piece,gameBoard = frame(gameBoard,piece)
     if keys[pygame.K_w]:
         piece = move(gameBoard,piece,3)    
-    if keys[pygame.K_s]:
-        piece = move(gameBoard,piece,4)      
+        heckcolision = np.any((gameBoard==1)&(piece==1))
+        if heckcolision:
+            piece,gameBoard = frame(gameBoard,piece)
+    if keys[pygame.K_s]:   
+        piece, gameBoard = frame(gameBoard,piece)
 
-
+    
     # print(piece)
     # print("-----")
     # print(gameBoard)
+    
     drawGrid()
     drawBoard(gameBoard,piece)
     pygame.display.flip()
-    clock.tick(10)
+    clock.tick(15)
 
 
 
