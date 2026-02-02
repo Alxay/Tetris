@@ -62,6 +62,17 @@ def checkColision(gameBoard,piece):
         return True
     return False
 
+def vanish(gameBoard):
+    x=0
+    rows_to_clear = np.where(np.all(gameBoard == 1, axis=1))[0]
+    for y in rows_to_clear:
+        while x < 10:
+            gameBoard[y][x] = 0
+            x+=1
+    return gameBoard
+
+
+
 def maxCords(blocks):
     minX = 100
     maxX = 0
@@ -118,7 +129,7 @@ def move(gameBoard,piece,direction):
 
         # try:
         #     piece2[x1:x2, y1:y2] = rotated
-        # except ValueError:
+        # except ValueError:s
         #     print("Nie można wstawić fragmentu – wychodzi poza planszę!")
         #     return piece
         if np.any((gameBoard==1)&(piece2==1)):
@@ -166,6 +177,7 @@ while running:
     # print(gameBoard)
     
     drawGrid()
+    gameBoard = vanish(gameBoard)
     drawBoard(gameBoard,piece)
     pygame.display.flip()
     clock.tick(15)
