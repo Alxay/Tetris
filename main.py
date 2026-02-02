@@ -122,17 +122,19 @@ def move(gameBoard,piece,direction):
 
         fragment = piece[x1:x2, y1:y2]
         print(fragment)
+        if fragment.shape[0] < 3:
+            x2 += 1
+            fragment = piece[x1:x2, y1:y2]
+        elif fragment.shape[1] < 3:
+            y2 += 1
+            fragment = piece[x1:x2, y1:y2]
+        
         rotated = np.rot90(fragment, -1)  # -1 = 90° w prawo
         print(rotated)
-        if minY <= 0 or maxY >= 9 or minX <= 0 or maxX >= 19:
-            return piece,gameBoard
+        
+    
         piece2[x1:x2, y1:y2] = rotated
 
-        # try:
-        #     piece2[x1:x2, y1:y2] = rotated
-        # except ValueError:s
-        #     print("Nie można wstawić fragmentu – wychodzi poza planszę!")
-        #     return piece
         if np.any((gameBoard==1)&(piece2==1)):
             print("Kolizja po obrocie!")
             return piece,gameBoard
