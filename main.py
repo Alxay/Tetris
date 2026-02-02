@@ -148,10 +148,12 @@ TICK_EVENT = pygame.USEREVENT + 1
 
 # Ustaw timer, który wysyła TICK_EVENT co 1000 ms (1 sekunda)
 pygame.time.set_timer(TICK_EVENT, 1000)
-
+move_delay = 100  # delay in milliseconds
+last_move_time = 0
 while running:
     #game loop
     screen.fill("black")
+    current_time = pygame.time.get_ticks()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -166,8 +168,9 @@ while running:
         piece,gameBoard = move(gameBoard,piece,1)
     if keys[pygame.K_a]:
         piece,gameBoard = move(gameBoard,piece,2)
-    if keys[pygame.K_w]:
+    if keys[pygame.K_w] and current_time - last_move_time > move_delay:
         piece,gameBoard = move(gameBoard,piece,3)    
+        last_move_time = current_time
     if keys[pygame.K_s]:   
         piece, gameBoard = frame(gameBoard,piece)
 
