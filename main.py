@@ -1,5 +1,6 @@
 import pygame
 import numpy as np
+import random
 
 pygame.init()
 screen = pygame.display.set_mode((350,700))
@@ -7,14 +8,47 @@ clock = pygame.time.Clock()
 running = True
 gameBoard = np.zeros((20,10),dtype=int)
 print(gameBoard)
+font = pygame.font.SysFont("Arial", 36)  # czcionka i rozmiar
 
 
 def generatePiece():
+    num = random.randint(0,6)
     piece = np.zeros((20,10),dtype=int)
-    piece[0][2] = 1
-    piece[0][3] = 1
-    piece[0][4] = 1
-    piece[1][3] = 1
+    if num == 0:
+        piece[0][2] = 1
+        piece[0][3] = 1
+        piece[0][4] = 1
+        piece[1][3] = 1
+    elif num == 1:
+        piece[0][2] = 1
+        piece[0][3] = 1
+        piece[1][3] = 1
+        piece[1][4] = 1
+    elif num == 2:
+        piece[0][3] = 1
+        piece[1][3] = 1
+        piece[2][3] = 1
+        piece[2][4] = 1
+    elif num == 3:
+        piece[0][3] = 1
+        piece[1][3] = 1
+        piece[2][3] = 1
+        piece[1][4] = 1
+    elif num == 4:
+        piece[0][3] = 1
+        piece[0][4] = 1
+        piece[1][2] = 1
+        piece[1][3] = 1
+    elif num == 5:
+        piece[0][2] = 1
+        piece[1][2] = 1
+        piece[1][3] = 1
+        piece[2][3] = 1
+    elif num == 6:
+        piece[0][3] = 1
+        piece[1][3] = 1
+        piece[1][2] = 1
+        piece[2][2] = 1
     return piece
    
 
@@ -62,14 +96,16 @@ def checkColision(gameBoard,piece):
         return True
     return False
 
-def vanish(gameBoard):
+def vanish(gameBoard,score=0):
     x=0
     rows_to_clear = np.where(np.all(gameBoard == 1, axis=1))[0]
     for y in rows_to_clear:
         while x < 10:
             gameBoard[y][x] = 0
             x+=1
-    return gameBoard
+    score += (len(rows_to_clear)**2) *5 
+    
+    return gameBoard,score
 
 
 
@@ -141,11 +177,23 @@ def move(gameBoard,piece,direction):
         
     return piece2,gameBoard
 
+def checkGameState(gameBoard):
+    if np.any(gameBoard[0] == 1):
+        print("Game Over!")
+        pygame.quit()
+        exit()
 
+def showScore(value):
+    rect = pygame.Rect(300,0,50,50)
+    pygame.draw.rect(screen,"green",rect)
+    text_surface = font.render(str(value), True, (255, 255, 255))
+    text_rect = text_surface.get_rect(center=(300 + 50/2, 0 + 50/2))
+    screen.blit(text_surface, text_rect)
+        
 piece = generatePiece()
-gameBoard[19][0] = 1
-gameBoard[19][1] = 1
-gameBoard[10][2] = 1
+# gameBoard[19][0] = 1
+# gameBoard[19][1] = 1
+# gameBoard[10][2] = 1
 # Tworzymy własne ID zdarzenia
 TICK_EVENT = pygame.USEREVENT + 1
 
@@ -153,6 +201,8 @@ TICK_EVENT = pygame.USEREVENT + 1
 pygame.time.set_timer(TICK_EVENT, 1000)
 move_delay = 100  # delay in milliseconds
 last_move_time = 0
+
+score = 0
 while running:
     #game loop
     screen.fill("black")
@@ -183,8 +233,10 @@ while running:
     # print(gameBoard)
     
     drawGrid()
-    gameBoard = vanish(gameBoard)
+    gameBoard,score = vanish(gameBoard,score)
     drawBoard(gameBoard,piece)
+    checkGameState(gameBoard)
+    showScore(score)
     pygame.display.flip()
     clock.tick(15)
 
