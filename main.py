@@ -49,6 +49,10 @@ def generatePiece():
         piece[1][3] = 1
         piece[1][2] = 1
         piece[2][2] = 1
+    # piece[0][1] = 1
+    # piece[0][2] = 1
+    # piece[0][3] = 1
+
     return piece
    
 
@@ -103,8 +107,7 @@ def vanish(gameBoard,score=0):
         while x < 10:
             gameBoard[y][x] = 0
             x+=1
-    score += (len(rows_to_clear)**2) *5 
-    
+    score += (len(rows_to_clear)**2) *5     
     return gameBoard,score
 
 
@@ -162,9 +165,15 @@ def move(gameBoard,piece,direction):
             x2 += 1
             fragment = piece[x1:x2, y1:y2]
         elif fragment.shape[1] < 3:
-            y2 += 1
+            if maxY >= 9:
+                y1-=1
+            else:
+                y2 += 1
             fragment = piece[x1:x2, y1:y2]
-        
+
+
+        print("Fragment przed obrotem:")        
+        print(fragment)
         rotated = np.rot90(fragment, -1)  # -1 = 90° w prawo
         print(rotated)
         
