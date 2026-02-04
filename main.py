@@ -1,6 +1,7 @@
 import pygame
 import numpy as np
 import random
+import time
 
 pygame.init()
 screen = pygame.display.set_mode((350,700))
@@ -107,7 +108,19 @@ def vanish(gameBoard,score=0):
         while x < 10:
             gameBoard[y][x] = 0
             x+=1
-    score += (len(rows_to_clear)**2) *5     
+    score += (len(rows_to_clear)**2) *5    
+    for a in rows_to_clear:
+        print(f"Clearing row: {a}")
+        x=a 
+        while x > 0:
+            print(f"Shifting row {x-1} to row {x}")
+            x-=1
+            y=0
+            while y < 10:
+                print(f"Moving block from ({x},{y}) to ({x+1},{y})")
+                gameBoard[x+1][y] = gameBoard[x][y]
+                y+=1
+
     return gameBoard,score
 
 
@@ -189,8 +202,8 @@ def move(gameBoard,piece,direction):
 def checkGameState(gameBoard):
     if np.any(gameBoard[0] == 1):
         print("Game Over!")
-        pygame.quit()
-        exit()
+        return True
+    return False
 
 def showScore(value):
     rect = pygame.Rect(300,0,50,50)
@@ -244,7 +257,13 @@ while running:
     drawGrid()
     gameBoard,score = vanish(gameBoard,score)
     drawBoard(gameBoard,piece)
-    checkGameState(gameBoard)
+    if checkGameState(gameBoard):
+        clock.tick(0)
+        time.sleep(5)
+        pygame.quit()
+        exit()
+        
+
     showScore(score)
     pygame.display.flip()
     clock.tick(15)
