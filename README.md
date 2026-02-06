@@ -4,7 +4,7 @@ Prosta wersja klasycznego Tetrisa napisana w Pythonie z użyciem Pygame.
 
 ## Pobierz i uruchom (bez Pythona)
 
-- Pobierz: [main.exe](main.exe)
+- Pobierz: [[main.exe](main.exe)](https://github.com/Alxay/Tetris/releases/tag/alpha)
 - Uruchom pobrany plik na Windows.
 
 ## Uruchomienie z kodu źródłowego
